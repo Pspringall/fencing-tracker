@@ -520,6 +520,28 @@ document.getElementById("awayTeamNameDisplay").textContent = score.away;
       }
     }
 
+// Show card prompt when Card button clicked
+function handleCard() {
+  const prompt = document.getElementById('cardPrompt');
+  prompt.style.display = 'block';
+}
+
+// Function to set team name color and hide prompt
+function setCardColor(team, color) {
+  const homeName = document.getElementById('homeTeamNameDisplay');
+  const awayName = document.getElementById('awayTeamNameDisplay');
+
+  if (team === 'home') {
+    homeName.style.color = color;
+  } else if (team === 'away') {
+    awayName.style.color = color;
+  }
+
+  // Hide the prompt after selection
+  document.getElementById('cardPrompt').style.display = 'none';
+}
+
+    
 window.toggleDrawer = function () {
   document.getElementById("drawerBackdrop").classList.add("open");
 };
@@ -680,6 +702,16 @@ if (savedTheme === "dark") {
       </div>
     </div>
   </div>
+
+  <div id="cardPrompt" style="display:none; margin-top: 20px; width: 100%; max-width: 400px; background-color: var(--panel-bg); border-radius: 8px; padding: 15px;">
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+    <button onclick="setCardColor('home', 'yellow')" style="background-color: yellow; color: black; font-weight: bold; padding: 10px;">Home Yellow</button>
+    <button onclick="setCardColor('home', 'red')" style="background-color: red; color: white; font-weight: bold; padding: 10px;">Home Red</button>
+    <button onclick="setCardColor('away', 'yellow')" style="background-color: yellow; color: black; font-weight: bold; padding: 10px;">Away Yellow</button>
+    <button onclick="setCardColor('away', 'red')" style="background-color: red; color: white; font-weight: bold; padding: 10px;">Away Red</button>
+  </div>
+</div>
+
 
   <script>
     // Update prompt text with current period and target
