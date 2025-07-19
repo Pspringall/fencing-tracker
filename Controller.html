@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fencing Controller</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #1c1c1e;
+      color: white;
+    }
+
+    .menu-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 2em;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 80%;
+      height: 100%;
+      background-color: #2c2c2e;
+      color: white;
+      padding: 20px;
+      transition: left 0.3s ease;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .drawer.open {
+      left: 0;
+    }
+
+    .drawer h2 {
+      margin-top: 0;
+    }
+
+    .team-section {
+      margin-bottom: 80px;
+    }
+
+    .team-section:not(:last-child) {
+      border-bottom: 1px solid #444;
+      padding-bottom: 20px;
+    }
+
+    .drawer label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .drawer input[type="text"],
+    .drawer input[type="file"],
+    .drawer input[type="color"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      background-color: #3a3a3c;
+      border: none;
+      color: white;
+      border-radius: 4px;
+    }
+
+    .drawer input[type="color"] {
+      height: 40px;
+    }
+
+    .controller {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 20px 20px;
+      gap: 20px;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .score-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center; /* vertical center alignment */
+      width: 100%;
+    }
+
+    .team-control {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      font-size: 2em;
+    }
+
+    .team-control button {
+      font-size: 2.5em;
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .plus {
+      background-color: #00ff00;
+      color: black;
+    }
+
+    .minus {
+      background-color: #ff3b30;
+      color: black;
+    }
+
+    .timer-section {
+      flex-shrink: 0;
+      width: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.5em;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+      width: 200px;
+    }
+
+    .controls button {
+      font-size: 1.5em;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      width: 100%;
+    }
+
+    .start-btn {
+      background-color: #00ff00;
+      color: black;
+    }
+
+    .stop-btn {
+      background-color: red;
+      color: white;
+    }
+
+    .reset-btn {
+      background-color: #ff3b30;
+      color: white;
+    }
+
+    hr {
+      width: 100%;
+      border-top: 1px solid #666;
+      margin: 20px 0;
+    }
+
+    /* Prompt container styling */
+    #promptContainer {
+      margin-top: 30px;
+      background-color: #333;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    #promptContainer p {
+      font-size: 1.1em;
+      margin: 0 0 15px;
+      line-height: 1.4;
+    }
+
+    .prompt-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .prompt-buttons button {
+      font-size: 1em !important;
+      padding: 10px 15px !important;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      width: 120px !important;
+      max-width: 45%;
+      white-space: normal;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.2;
+      cursor: pointer;
+    }
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyATy3iGYFoL-WqcZ0Be6K2b-1kVlPeoXYs",
+      authDomain: "fencing-score-tracker-32bc1.firebaseapp.com",
+      projectId: "fencing-score-tracker-32bc1",
+      storageBucket: "fencing-score-tracker-32bc1.appspot.com",
+      messagingSenderId: "50729538706",
+      appId: "1:50729538706:web:046a6d53f0a1e4311c824b",
+      measurementId: "G-CVGZ42GTGD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const scoreRef = ref(db, 'score');
+
+    let timerInterval;
+    let period = 1;
+    const maxPeriods = 9;
+    const incrementPoints = 5;
+
+    let score = {
+      home: "Home",
+      away: "Away",
+      homeScore: 0,
+      awayScore: 0,
+      timer: 180,
+      timerRunning: false,
+      logos: { home: "", away: "" },
+      colors: { home: "#00205B", away: "#66DDD4" },
+      period: period,
+      target: incrementPoints
+    };
+
+    // Load from Firebase on init
+    get(scoreRef).then(snapshot => {
+      if (snapshot.exists()) {
+        score = snapshot.val();
+        period = score.period || 1;
+        updateDisplay();
+      }
+    });
+
+    function updateDisplay() {
+      document.getElementById("homeScore").textContent = score.homeScore;
+      document.getElementById("awayScore").textContent = score.awayScore;
+      updateTimerDisplay();
+      updateButtonState();
+      document.getElementById("homeName").value = score.home;
+      document.getElementById("awayName").value = score.away;
+      document.getElementById("homeColor").value = score.colors?.home || "#00205B";
+      document.getElementById("awayColor").value = score.colors?.away || "#66DDD4";
+      document.getElementById("periodDisplay").textContent = `Period ${score.period} of ${maxPeriods}`;
+      document.getElementById("targetDisplay").textContent = `Target: ${score.target}`;
+      updatePromptVisibility();
+    }
+
+    function sendUpdate() {
+      set(scoreRef, score);
+    }
+
+    window.adjustScore = function(team, delta) {
+      score[team + "Score"] += delta;
+      if (score[team + "Score"] < 0) score[team + "Score"] = 0;
+      updateDisplay();
+      sendUpdate();
+    };
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      score.timerRunning = false;
+      updateButtonState();
+      sendUpdate();
+    }
+
+    window.toggleTimer = function () {
+      if (score.timerRunning) {
+        stopTimer();
+      } else {
+        score.timerRunning = true;
+        updateButtonState();
+        sendUpdate();
+        timerInterval = setInterval(() => {
+          if (score.timer > 0) {
+            score.timer--;
+            updateTimerDisplay();
+            sendUpdate();
+          } else {
+            stopTimer();
+            // Show prompt if target not reached when timer ends
+            if ((score.homeScore < score.target) && (score.awayScore < score.target)) {
+              showPrompt();
+            }
+          }
+        }, 1000);
+      }
+    };
+
+    window.resetTimer = function () {
+      stopTimer();
+      score.timer = 180;
+      updateTimerDisplay();
+      hidePrompt();
+      sendUpdate();
+    };
+
+    window.resetScore = function () {
+      score.homeScore = 0;
+      score.awayScore = 0;
+      period = 1;
+      score.period = period;
+      score.target = incrementPoints * period;
+      updateDisplay();
+      hidePrompt();
+      sendUpdate();
+    };
+
+    window.nextPeriod = function () {
+      if (period < maxPeriods) {
+        period++;
+        score.period = period;
+        score.target = incrementPoints * period;
+        updateDisplay();
+        hidePrompt();
+        sendUpdate();
+      }
+    };
+
+    function updateTimerDisplay() {
+      const min = Math.floor(score.timer / 60).toString().padStart(2, '0');
+      const sec = (score.timer % 60).toString().padStart(2, '0');
+      document.getElementById("timer").textContent = `${min}:${sec}`;
+    }
+
+    function updateButtonState() {
+      const btn = document.getElementById("startBtn");
+      if (score.timerRunning) {
+        btn.textContent = "Stop";
+        btn.classList.remove("start-btn");
+        btn.classList.add("stop-btn");
+      } else {
+        btn.textContent = "Start";
+        btn.classList.remove("stop-btn");
+        btn.classList.add("start-btn");
+      }
+    }
+
+    // Prompt controls
+    function showPrompt() {
+      document.getElementById("promptContainer").style.display = "block";
+    }
+
+    function hidePrompt() {
+      document.getElementById("promptContainer").style.display = "none";
+    }
+
+    function updatePromptVisibility() {
+      // Automatically hide prompt if timer running or target reached
+      if (score.timerRunning || (score.homeScore >= score.target || score.awayScore >= score.target)) {
+        hidePrompt();
+      }
+    }
+
+    window.toggleDrawer = function () {
+      document.getElementById("drawer").classList.toggle("open");
+    };
+
+    window.updateNames = function () {
+      score.home = document.getElementById("homeName").value;
+      score.away = document.getElementById("awayName").value;
+      sendUpdate();
+    };
+
+    window.updateColor = function (team, color) {
+      score.colors[team] = color;
+      sendUpdate();
+    };
+
+    window.handleLogoUpload = function(event, team) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        score.logos[team] = reader.result;
+        sendUpdate();
+      };
+      if (file) reader.readAsDataURL(file);
+    };
+
+    // Handle prompt buttons
+    window.stayInPeriod = function() {
+      hidePrompt();
+    };
+
+    window.confirmNextPeriod = function() {
+      window.nextPeriod();
+      hidePrompt();
+    };
+
+  </script>
+</head>
+
+<body>
+  <button class="menu-button" onclick="toggleDrawer()">☰</button>
+
+  <div class="drawer" id="drawer">
+    <h2>Team Settings</h2>
+
+    <div class="team-section">
+      <label for="homeName">Home Team Name</label>
+      <input type="text" id="homeName" onchange="updateNames()">
+
+      <label for="homeColor">Home Background Colour</label>
+      <input type="color" id="homeColor" onchange="updateColor('home', this.value)" />
+
+      <label>Home Logo</label>
+      <input type="file" accept="image/*" onchange="handleLogoUpload(event, 'home')">
+    </div>
+
+    <div class="team-section">
+      <label for="awayName">Away Team Name</label>
+      <input type="text" id="awayName" onchange="updateNames()">
+
+      <label for="awayColor">Away Background Colour</label>
+      <input type="color" id="awayColor" onchange="updateColor('away', this.value)" />
+
+      <label>Away Logo</label>
+      <input type="file" accept="image/*" onchange="handleLogoUpload(event, 'away')">
+    </div>
+  </div>
+
+  <div class="controller">
+    <div id="periodDisplay" style="font-size: 1.2em; margin-bottom: 4px;">Period 1 of 9</div>
+    <div id="targetDisplay" style="font-size: 1.4em; margin-bottom: 12px;">Target: 5</div>
+
+    <div class="score-controls">
+      <div class="team-control">
+        <button class="plus" onclick="adjustScore('home', 1)">+</button>
+        <div id="homeScore">0</div>
+        <button class="minus" onclick="adjustScore('home', -1)">–</button>
+      </div>
+
+      <div class="timer-section">
+        <div id="timer">03:00</div>
+      </div>
+
+      <div class="team-control">
+        <button class="plus" onclick="adjustScore('away', 1)">+</button>
+        <div id="awayScore">0</div>
+        <button class="minus" onclick="adjustScore('away', -1)">–</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="startBtn" class="start-btn" onclick="toggleTimer()">Start</button>
+      <button class="reset-btn" onclick="resetTimer()">Reset Timer</button>
+      <button class="reset-btn" onclick="resetScore()">Reset Score & Period</button>
+    </div>
+
+    <hr>
+
+    <div class="controls">
+      <button class="start-btn" onclick="nextPeriod()">Next Period</button>
+    </div>
+
+    <div id="promptContainer" style="display:none;">
+      <p>⚠ Period <strong><span id="promptPeriod">1</span></strong> timer expired.<br />
+         Target <strong><span id="promptTarget">5</span></strong> not reached.</p>
+      <div class="prompt-buttons">
+        <button class="reset-btn" onclick="stayInPeriod()">Stay in Period</button>
+        <button class="start-btn" onclick="confirmNextPeriod()">✓ Next</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Update prompt text with current period and target
+    function updatePromptText() {
+      document.getElementById("promptPeriod").textContent = score.period;
+      document.getElementById("promptTarget").textContent = score.target;
+    }
+
+    // Override updateDisplay to also update prompt text
+    const originalUpdateDisplay = window.updateDisplay;
+    window.updateDisplay = function() {
+      originalUpdateDisplay();
+      updatePromptText();
+    };
+  </script>
+</body>
+</html>
