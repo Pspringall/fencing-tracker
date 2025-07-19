@@ -381,6 +381,8 @@ const firebaseConfig = {
       document.getElementById("periodDisplay").textContent = `Period ${score.period} of ${maxPeriods}`;
       document.getElementById("targetDisplay").textContent = `Target: ${score.target}`;
       updatePromptVisibility();
+      document.getElementById("homeTeamNameDisplay").textContent = score.home;
+document.getElementById("awayTeamNameDisplay").textContent = score.away;
     }
 
     function sendUpdate() {
@@ -500,6 +502,7 @@ window.closeDrawer = function () {
     window.updateNames = function () {
       score.home = document.getElementById("homeName").value;
       score.away = document.getElementById("awayName").value;
+      updateDisplay();
       sendUpdate();
     };
 
@@ -602,22 +605,27 @@ if (savedTheme === "dark") {
     <div id="targetDisplay" style="font-size: 1.4em; margin-bottom: 12px;">Target: 5</div>
 
     <div class="score-controls">
-      <div class="team-control">
-        <button class="plus" onclick="adjustScore('home', 1)">+</button>
-        <div id="homeScore">0</div>
-        <button class="minus" onclick="adjustScore('home', -1)">–</button>
-      </div>
+<div class="team-control">
+  <div id="homeTeamNameDisplay" style="margin-bottom: 6px; font-weight: bold; font-size: 1.2em; color: var(--text-color);">
+    Home
+  </div>
+  <button class="plus" onclick="adjustScore('home', 1)">+</button>
+  <div id="homeScore">0</div>
+  <button class="minus" onclick="adjustScore('home', -1)">–</button>
+</div>
 
       <div class="timer-section">
         <div id="timer">03:00</div>
       </div>
 
-      <div class="team-control">
-        <button class="plus" onclick="adjustScore('away', 1)">+</button>
-        <div id="awayScore">0</div>
-        <button class="minus" onclick="adjustScore('away', -1)">–</button>
-      </div>
-    </div>
+<div class="team-control">
+  <div id="awayTeamNameDisplay" style="margin-bottom: 6px; font-weight: bold; font-size: 1.2em; color: var(--text-color);">
+    Away
+  </div>
+  <button class="plus" onclick="adjustScore('away', 1)">+</button>
+  <div id="awayScore">0</div>
+  <button class="minus" onclick="adjustScore('away', -1)">–</button>
+</div>
 
     <div class="controls">
       <button id="startBtn" class="start-btn" onclick="toggleTimer()">Start</button>
