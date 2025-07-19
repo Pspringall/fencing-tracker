@@ -235,6 +235,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+  width: 100%;
 }
 
 .quadrant-buttons button {
@@ -258,7 +259,7 @@
 }
 
 .card-btn {
-  background-color: #0077cc; /* You can adjust this color */
+  background-color: #0077cc; /* blue for card */
   color: white;
 }
   
@@ -649,7 +650,7 @@ if (savedTheme === "dark") {
 
 <div class="controls">
   <button id="startBtn" class="start-btn" onclick="toggleTimer()">Start</button>
-
+  
   <div class="quadrant-buttons">
     <button class="reset-btn" onclick="resetTimer()">Reset Timer</button>
     <button class="reset-btn" onclick="resetScore()">Reset Score & Period</button>
