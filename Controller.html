@@ -4,325 +4,318 @@
   <meta charset="UTF-8" />
   <title>Fencing Controller</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+  * {
+    box-sizing: border-box;
+  }
 
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #1c1c1e;
-      color: white;
-    }
+  :root {
+    /* Light theme colors */
+    --bg-color: #ffffff;
+    --text-color: #002147; /* Oxford Blue */
+    --panel-bg: #f2f2f2;
+    --border-color: #cccccc;
 
-   .menu-button {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 2em;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  z-index: 1101; /* ensure it's above drawer */
-}
+    --btn-start-bg: #00cc00;
+    --btn-start-color: white;
 
-.theme-toggle {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 1102;
-  padding: 4px;
-}
+    --btn-stop-bg: red;
+    --btn-stop-color: white;
 
-.theme-toggle svg {
-  stroke: white; /* default is white for dark mode */
-  width: 28px;
-  height: 28px;
-}
+    --btn-reset-bg: #cc0000;
+    --btn-reset-color: white;
 
-body:not(.dark-theme) .theme-toggle svg {
-  stroke: #002147; /* Oxford Blue for light mode */
-}
-    
-.drawer-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: none;
-  z-index: 1100;
-}
+    --input-bg: #e0e0e0;
+    --input-color: #002147;
+  }
 
-.drawer-backdrop.open {
-  display: block;
-}
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
-.drawer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 80%;
-  height: 100%;
-  background-color: #2c2c2e;
-  color: white;
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-  overflow-y: auto;
-}
+  .menu-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 2em;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    z-index: 1101; /* above drawer */
+    transition: color 0.3s ease;
+  }
 
-.drawer h2 {
-  margin-top: 0;
-}
+  .theme-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1102;
+    padding: 4px;
+  }
 
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.8em;
-  cursor: pointer;
-}
+  .theme-toggle svg {
+    stroke: #002147; /* Oxford Blue by default (light mode) */
+    width: 28px;
+    height: 28px;
+    transition: stroke 0.3s ease;
+  }
 
-.team-section {
-  margin-bottom: 80px;
-}
+  body.dark-theme .theme-toggle svg {
+    stroke: white;
+  }
 
-    .team-section:not(:last-child) {
-      border-bottom: 1px solid #444;
-      padding-bottom: 20px;
-    }
+  .drawer-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 1100;
+  }
 
-    .drawer label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
+  .drawer-backdrop.open {
+    display: block;
+  }
 
-    .drawer input[type="text"],
-    .drawer input[type="file"],
-    .drawer input[type="color"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      background-color: #3a3a3c;
-      border: none;
-      color: white;
-      border-radius: 4px;
-    }
+  .drawer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80%;
+    height: 100%;
+    background-color: var(--panel-bg);
+    color: var(--text-color);
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
-    .drawer input[type="color"] {
-      height: 40px;
-    }
+  .drawer h2 {
+    margin-top: 0;
+  }
 
-    .controller {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 80px 20px 20px;
-      gap: 20px;
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-    }
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.8em;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
 
-    .score-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center; /* vertical center alignment */
-      width: 100%;
-    }
+  .team-section {
+    margin-bottom: 80px;
+  }
 
-    .team-control {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      font-size: 2em;
-    }
+  .team-section:not(:last-child) {
+    border-bottom: 1px solid #444;
+    padding-bottom: 20px;
+  }
 
-    .team-control button {
-      font-size: 2.5em;
-      width: 60px;
-      height: 60px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
+  .drawer label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+  }
 
-    .plus {
-      background-color: #00ff00;
-      color: black;
-    }
+  .drawer input[type="text"],
+  .drawer input[type="file"],
+  .drawer input[type="color"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    background-color: var(--input-bg);
+    border: none;
+    color: var(--input-color);
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
-    .minus {
-      background-color: #ff3b30;
-      color: black;
-    }
+  .drawer input[type="color"] {
+    height: 40px;
+  }
 
-    .timer-section {
-      flex-shrink: 0;
-      width: 100px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 2.5em;
-    }
+  .controller {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 20px 20px;
+    gap: 20px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
 
-    .controls {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 20px;
-      width: 200px;
-    }
+  .score-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* vertical center alignment */
+    width: 100%;
+  }
 
-    .controls button {
-      font-size: 1.5em;
-      padding: 15px 30px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      width: 100%;
-    }
+  .team-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-size: 2em;
+  }
 
-    .start-btn {
-      background-color: #00ff00;
-      color: black;
-    }
+  .team-control button {
+    font-size: 2.5em;
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
 
-    .stop-btn {
-      background-color: red;
-      color: white;
-    }
+  .plus {
+    background-color: #00ff00;
+    color: black;
+  }
 
-    .reset-btn {
-      background-color: #ff3b30;
-      color: white;
-    }
+  .minus {
+    background-color: #ff3b30;
+    color: black;
+  }
 
-    hr {
-      width: 100%;
-      border-top: 1px solid #666;
-      margin: 20px 0;
-    }
+  .timer-section {
+    flex-shrink: 0;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5em;
+  }
 
-    /* Prompt container styling */
-    #promptContainer {
-      margin-top: 30px;
-      background-color: #333;
-      padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-    }
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    width: 200px;
+  }
 
-    #promptContainer p {
-      font-size: 1.1em;
-      margin: 0 0 15px;
-      line-height: 1.4;
-    }
+  .controls button {
+    font-size: 1.5em;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    width: 100%;
+  }
 
-    .prompt-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
+  .start-btn {
+    background-color: var(--btn-start-bg);
+    color: var(--btn-start-color);
+  }
 
-    .prompt-buttons button {
-      font-size: 1em !important;
-      padding: 10px 15px !important;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      width: 120px !important;
-      max-width: 45%;
-      white-space: normal;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1.2;
-      cursor: pointer;
-    }
+  .stop-btn {
+    background-color: var(--btn-stop-bg);
+    color: var(--btn-stop-color);
+  }
 
-    body.light-mode {
-  background-color: white;
-  color: black;
-}
+  .reset-btn {
+    background-color: var(--btn-reset-bg);
+    color: var(--btn-reset-color);
+  }
 
-body.light-mode .drawer {
-  background-color: #f0f0f0;
-  color: black;
-}
+  hr {
+    width: 100%;
+    border-top: 1px solid #666;
+    margin: 20px 0;
+  }
 
-body.light-mode input[type="text"],
-body.light-mode input[type="file"],
-body.light-mode input[type="color"] {
-  background-color: #e0e0e0;
-  color: black;
-}
+  /* Prompt container styling */
+  #promptContainer {
+    margin-top: 30px;
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+  }
 
-body.light-mode .drawer label {
-  color: black;
-}
+  #promptContainer p {
+    font-size: 1.1em;
+    margin: 0 0 15px;
+    line-height: 1.4;
+  }
 
-body.light-mode .menu-button,
-body.light-mode .theme-toggle svg,
-body.light-mode .close-button {
-  color: #1c1c1e;
-  stroke: #1c1c1e;
-}
+  .prompt-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
 
-body.light-mode .start-btn {
-  background-color: #00cc00;
-  color: white;
-}
+  .prompt-buttons button {
+    font-size: 1em !important;
+    padding: 10px 15px !important;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    width: 120px !important;
+    max-width: 45%;
+    white-space: normal;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    cursor: pointer;
+  }
 
-body.light-mode .reset-btn {
-  background-color: #cc0000;
-  color: white;
-}
+  /* ---- Dark Theme overrides ---- */
+  body.dark-theme {
+    background-color: #1c1c1e;
+    color: white;
+  }
 
-    :root {
-  /* Light theme */
-  --bg-color: #ffffff;
-  --text-color: #002147;
-  --panel-bg: #f2f2f2;
-  --border-color: #cccccc;
+  body.dark-theme .menu-button,
+  body.dark-theme .theme-toggle svg,
+  body.dark-theme .close-button {
+    color: white;
+    stroke: white;
+  }
 
-  --btn-start: #28A745;
-  --btn-stop: #DC3545;
-  --btn-reset: #FFD700;
-  --btn-text: #ffffff;
-}
+  body.dark-theme .drawer {
+    background-color: #2c2c2e;
+    color: white;
+  }
 
-body.dark-mode {
-  /* Dark theme */
-  --bg-color: #002147;
-  --text-color: #ffffff;
-  --panel-bg: #1B2A3C;
-  --border-color: #113355;
+  body.dark-theme .drawer input[type="text"],
+  body.dark-theme .drawer input[type="file"],
+  body.dark-theme .drawer input[type="color"] {
+    background-color: #3a3a3c;
+    color: white;
+  }
 
-  --btn-start: #66FF99;
-  --btn-stop: #FF6666;
-  --btn-reset: #FFD700;
-  --btn-text: #002147;
-}
-  </style>
+  body.dark-theme #promptContainer {
+    background-color: #444;
+  }
+</style>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
