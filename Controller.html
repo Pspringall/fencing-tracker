@@ -152,63 +152,65 @@
     height: 40px;
   }
 
-  .controller {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 80px 20px 20px;
-    gap: 20px;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-  }
+.controller {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 20px 20px;
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
 
-  .score-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* vertical center alignment */
-    width: 100%;
-  }
+.score-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
 
-  .team-control {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    font-size: 2em;
-  }
+.team-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 2em;
+}
 
-  .team-control button {
-    font-size: 2.5em;
-    width: 60px;
-    height: 60px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
+.team-control button {
+  font-size: 2.5em;
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
 
-  .plus {
-    background-color: #43B201; /*Green */
-    color: black;
-  }
+.plus {
+  background-color: #43B201; /*Green */
+  color: black;
+}
 
-  .minus {
-    background-color: #c62828; /*Dark red */
-    color: black;
-  }
+.minus {
+  background-color: #c62828; /*Dark red */
+  color: black;
+}
 
-  .timer-section {
-    flex-shrink: 0;
-    width: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2.5em;
-  }
+.timer-section {
+  flex-shrink: 0;
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5em;
+}
+
+/* === CONTROLS BELOW TIMER === */
 
 .controls {
   display: flex;
@@ -216,7 +218,7 @@
   gap: 20px;
   width: 100%;
   max-width: 600px;
-  margin: 0 auto;
+  margin-top: 20px;
 }
 
 #startBtn {
@@ -233,7 +235,7 @@
 
 .quadrant-buttons {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   width: 100%;
 }
@@ -262,12 +264,12 @@
   background-color: #CFBA0E; /* yellow for card */
   color: white;
 }
-  
-  hr {
-    width: 100%;
-    border-top: 1px solid #666;
-    margin: 20px 0;
-  }
+
+hr {
+  width: 100%;
+  border-top: 1px solid #666;
+  margin: 20px 0;
+}
 
   /* Prompt container styling */
   #promptContainer {
