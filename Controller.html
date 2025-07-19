@@ -257,6 +257,44 @@ body:not(.dark-theme) .theme-toggle svg {
       line-height: 1.2;
       cursor: pointer;
     }
+
+    body.light-mode {
+  background-color: white;
+  color: black;
+}
+
+body.light-mode .drawer {
+  background-color: #f0f0f0;
+  color: black;
+}
+
+body.light-mode input[type="text"],
+body.light-mode input[type="file"],
+body.light-mode input[type="color"] {
+  background-color: #e0e0e0;
+  color: black;
+}
+
+body.light-mode .drawer label {
+  color: black;
+}
+
+body.light-mode .menu-button,
+body.light-mode .theme-toggle svg,
+body.light-mode .close-button {
+  color: #1c1c1e;
+  stroke: #1c1c1e;
+}
+
+body.light-mode .start-btn {
+  background-color: #00cc00;
+  color: white;
+}
+
+body.light-mode .reset-btn {
+  background-color: #cc0000;
+  color: white;
+}
   </style>
 
   <script type="module">
@@ -464,17 +502,17 @@ window.closeDrawer = function () {
       hidePrompt();
     };
 
-  // Theme toggle function
-  window.toggleDarkMode = function () {
-    const isDark = document.body.classList.toggle("dark-theme");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-  };
+// Theme toggle function
+window.toggleDarkMode = function () {
+  const isLight = document.body.classList.toggle("light-mode");
+  localStorage.setItem("theme", isLight ? "light" : "dark");
+};
 
-  // On load: set theme from localStorage
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark-theme");
-  }
+// On load: set theme from localStorage
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "light") {
+  document.body.classList.add("light-mode");
+}
     
   </script>
 </head>
