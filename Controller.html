@@ -540,6 +540,20 @@ hr {
     document.getElementById('cardPrompt').style.display = 'none';
   };
 
+  window.resetCardColors = function() {
+  const homeName = document.getElementById('homeTeamNameDisplay');
+  const awayName = document.getElementById('awayTeamNameDisplay');
+
+  // Reset colors to default text color from CSS variable --text-color
+  const defaultColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim() || '#002147';
+
+  homeName.style.color = defaultColor;
+  awayName.style.color = defaultColor;
+
+  // Hide the card prompt after resetting
+  document.getElementById('cardPrompt').style.display = 'none';
+};
+
   window.toggleDrawer = function () {
     document.getElementById("drawerBackdrop").classList.add("open");
   };
@@ -707,6 +721,10 @@ hr {
     <button onclick="setCardColor('home', 'red')" style="background-color: red; color: white; font-weight: bold; padding: 10px;">Home Red</button>
     <button onclick="setCardColor('away', 'red')" style="background-color: red; color: white; font-weight: bold; padding: 10px;">Away Red</button>
   </div>
+          <!-- New reset button spanning full width -->
+  <button onclick="resetCardColors()" style="margin-top: 15px; width: 100%; padding: 12px; font-weight: bold; border-radius: 6px; border: none; background-color: #666; color: white; cursor: pointer;">
+    Reset Team Name Colors
+  </button>
 </div>
 
 
