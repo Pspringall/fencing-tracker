@@ -448,36 +448,41 @@ window.closeDrawer = function () {
 </head>
 
 <body>
+  <!-- Hamburger Button -->
   <button class="menu-button" onclick="toggleDrawer()">☰</button>
+
+  <!-- Side Drawer and Backdrop -->
   <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"> 
-   <div class="drawer" id="drawer" onclick="event.stopPropagation()">
-  <button class="close-button" onclick="closeDrawer()">✕</button>
-    
-    <h2>Team Settings</h2>
+    <div class="drawer" id="drawer" onclick="event.stopPropagation()">
+      <button class="close-button" onclick="closeDrawer()">✕</button>
 
-    <div class="team-section">
-      <label for="homeName">Home Team Name</label>
-      <input type="text" id="homeName" onchange="updateNames()">
+      <h2 style="margin-top: 40px;">Team Settings</h2>
 
-      <label for="homeColor">Home Background Colour</label>
-      <input type="color" id="homeColor" onchange="updateColor('home', this.value)" />
+      <div class="team-section">
+        <label for="homeName">Home Team Name</label>
+        <input type="text" id="homeName" onchange="updateNames()">
 
-      <label>Home Logo</label>
-      <input type="file" accept="image/*" onchange="handleLogoUpload(event, 'home')">
-    </div>
+        <label for="homeColor">Home Background Colour</label>
+        <input type="color" id="homeColor" onchange="updateColor('home', this.value)" />
 
-    <div class="team-section">
-      <label for="awayName">Away Team Name</label>
-      <input type="text" id="awayName" onchange="updateNames()">
+        <label>Home Logo</label>
+        <input type="file" accept="image/*" onchange="handleLogoUpload(event, 'home')">
+      </div>
 
-      <label for="awayColor">Away Background Colour</label>
-      <input type="color" id="awayColor" onchange="updateColor('away', this.value)" />
+      <div class="team-section">
+        <label for="awayName">Away Team Name</label>
+        <input type="text" id="awayName" onchange="updateNames()">
 
-      <label>Away Logo</label>
-      <input type="file" accept="image/*" onchange="handleLogoUpload(event, 'away')">
+        <label for="awayColor">Away Background Colour</label>
+        <input type="color" id="awayColor" onchange="updateColor('away', this.value)" />
+
+        <label>Away Logo</label>
+        <input type="file" accept="image/*" onchange="handleLogoUpload(event, 'away')">
+      </div>
     </div>
   </div>
 
+  <!-- Main Controller UI -->
   <div class="controller">
     <div id="periodDisplay" style="font-size: 1.2em; margin-bottom: 4px;">Period 1 of 9</div>
     <div id="targetDisplay" style="font-size: 1.4em; margin-bottom: 12px;">Target: 5</div>
@@ -529,9 +534,9 @@ window.closeDrawer = function () {
       document.getElementById("promptTarget").textContent = score.target;
     }
 
-    // Override updateDisplay to also update prompt text
+    // Extend updateDisplay to refresh prompt text
     const originalUpdateDisplay = window.updateDisplay;
-    window.updateDisplay = function() {
+    window.updateDisplay = function () {
       originalUpdateDisplay();
       updatePromptText();
     };
