@@ -352,251 +352,249 @@ hr {
   }
 </style>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
-    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-database.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+  import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDAlkCUMJiGU1wWs2pzwvjpdg_f5j-5aRk",
-  authDomain: "fencing-score-tracker-babb9.firebaseapp.com",
-  databaseURL: "https://fencing-score-tracker-babb9-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "fencing-score-tracker-babb9",
-  storageBucket: "fencing-score-tracker-babb9.firebasestorage.app",
-  messagingSenderId: "347313737345",
-  appId: "1:347313737345:web:c60fb5f492973499c80780",
-  measurementId: "G-DYNCKKT3PT"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyDAlkCUMJiGU1wWs2pzwvjpdg_f5j-5aRk",
+    authDomain: "fencing-score-tracker-babb9.firebaseapp.com",
+    databaseURL: "https://fencing-score-tracker-babb9-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "fencing-score-tracker-babb9",
+    storageBucket: "fencing-score-tracker-babb9.firebasestorage.app",
+    messagingSenderId: "347313737345",
+    appId: "1:347313737345:web:c60fb5f492973499c80780",
+    measurementId: "G-DYNCKKT3PT"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const scoreRef = ref(db, 'score');
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const scoreRef = ref(db, 'score');
 
-    let timerInterval;
-    let period = 1;
-    const maxPeriods = 9;
-    const incrementPoints = 5;
+  let timerInterval;
+  let period = 1;
+  const maxPeriods = 9;
+  const incrementPoints = 5;
 
-    let score = {
-      home: "Home",
-      away: "Away",
-      homeScore: 0,
-      awayScore: 0,
-      timer: 180,
-      timerRunning: false,
-      logos: { home: "", away: "" },
-      colors: { home: "#00205B", away: "#66DDD4" },
-      period: period,
-      target: incrementPoints
-    };
+  let score = {
+    home: "Home",
+    away: "Away",
+    homeScore: 0,
+    awayScore: 0,
+    timer: 180,
+    timerRunning: false,
+    logos: { home: "", away: "" },
+    colors: { home: "#00205B", away: "#66DDD4" },
+    period: period,
+    target: incrementPoints
+  };
 
-    // Load from Firebase on init
-    get(scoreRef).then(snapshot => {
-      if (snapshot.exists()) {
-        score = snapshot.val();
-        period = score.period || 1;
-        updateDisplay();
-      }
-    });
-
-    function updateDisplay() {
-      document.getElementById("homeScore").textContent = score.homeScore;
-      document.getElementById("awayScore").textContent = score.awayScore;
-      updateTimerDisplay();
-      updateButtonState();
-      document.getElementById("homeName").value = score.home;
-      document.getElementById("awayName").value = score.away;
-      document.getElementById("homeColor").value = score.colors?.home || "#00205B";
-      document.getElementById("awayColor").value = score.colors?.away || "#66DDD4";
-      document.getElementById("periodDisplay").textContent = `Period ${score.period} of ${maxPeriods}`;
-      document.getElementById("targetDisplay").textContent = `Target: ${score.target}`;
-      updatePromptVisibility();
-      document.getElementById("homeTeamNameDisplay").textContent = score.home;
-document.getElementById("awayTeamNameDisplay").textContent = score.away;
-    }
-
-    function sendUpdate() {
-      set(scoreRef, score);
-    }
-
-    window.adjustScore = function(team, delta) {
-      score[team + "Score"] += delta;
-      if (score[team + "Score"] < 0) score[team + "Score"] = 0;
+  // Load from Firebase on init
+  get(scoreRef).then(snapshot => {
+    if (snapshot.exists()) {
+      score = snapshot.val();
+      period = score.period || 1;
       updateDisplay();
-      sendUpdate();
-    };
+    }
+  });
 
-    function stopTimer() {
-      clearInterval(timerInterval);
-      score.timerRunning = false;
+  function updateDisplay() {
+    document.getElementById("homeScore").textContent = score.homeScore;
+    document.getElementById("awayScore").textContent = score.awayScore;
+    updateTimerDisplay();
+    updateButtonState();
+    document.getElementById("homeName").value = score.home;
+    document.getElementById("awayName").value = score.away;
+    document.getElementById("homeColor").value = score.colors?.home || "#00205B";
+    document.getElementById("awayColor").value = score.colors?.away || "#66DDD4";
+    document.getElementById("periodDisplay").textContent = `Period ${score.period} of ${maxPeriods}`;
+    document.getElementById("targetDisplay").textContent = `Target: ${score.target}`;
+    updatePromptVisibility();
+    document.getElementById("homeTeamNameDisplay").textContent = score.home;
+    document.getElementById("awayTeamNameDisplay").textContent = score.away;
+  }
+
+  function sendUpdate() {
+    set(scoreRef, score);
+  }
+
+  window.adjustScore = function(team, delta) {
+    score[team + "Score"] += delta;
+    if (score[team + "Score"] < 0) score[team + "Score"] = 0;
+    updateDisplay();
+    sendUpdate();
+  };
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    score.timerRunning = false;
+    updateButtonState();
+    sendUpdate();
+  }
+
+  window.toggleTimer = function () {
+    if (score.timerRunning) {
+      stopTimer();
+    } else {
+      score.timerRunning = true;
       updateButtonState();
       sendUpdate();
-    }
-
-    window.toggleTimer = function () {
-      if (score.timerRunning) {
-        stopTimer();
-      } else {
-        score.timerRunning = true;
-        updateButtonState();
-        sendUpdate();
-        timerInterval = setInterval(() => {
-          if (score.timer > 0) {
-            score.timer--;
-            updateTimerDisplay();
-            sendUpdate();
-          } else {
-            stopTimer();
-            // Show prompt if target not reached when timer ends
-            if ((score.homeScore < score.target) && (score.awayScore < score.target)) {
-              showPrompt();
-            }
+      timerInterval = setInterval(() => {
+        if (score.timer > 0) {
+          score.timer--;
+          updateTimerDisplay();
+          sendUpdate();
+        } else {
+          stopTimer();
+          // Show prompt if target not reached when timer ends
+          if ((score.homeScore < score.target) && (score.awayScore < score.target)) {
+            showPrompt();
           }
-        }, 1000);
-      }
-    };
+        }
+      }, 1000);
+    }
+  };
 
-    window.resetTimer = function () {
-      stopTimer();
-      score.timer = 180;
-      updateTimerDisplay();
-      hidePrompt();
-      sendUpdate();
-    };
+  window.resetTimer = function () {
+    stopTimer();
+    score.timer = 180;
+    updateTimerDisplay();
+    hidePrompt();
+    sendUpdate();
+  };
 
-    window.resetScore = function () {
-      score.homeScore = 0;
-      score.awayScore = 0;
-      period = 1;
+  window.resetScore = function () {
+    score.homeScore = 0;
+    score.awayScore = 0;
+    period = 1;
+    score.period = period;
+    score.target = incrementPoints * period;
+    updateDisplay();
+    hidePrompt();
+    sendUpdate();
+  };
+
+  window.nextPeriod = function () {
+    if (period < maxPeriods) {
+      period++;
       score.period = period;
       score.target = incrementPoints * period;
       updateDisplay();
       hidePrompt();
       sendUpdate();
-    };
-
-    window.nextPeriod = function () {
-      if (period < maxPeriods) {
-        period++;
-        score.period = period;
-        score.target = incrementPoints * period;
-        updateDisplay();
-        hidePrompt();
-        sendUpdate();
-      }
-    };
-
-    function updateTimerDisplay() {
-      const min = Math.floor(score.timer / 60).toString().padStart(2, '0');
-      const sec = (score.timer % 60).toString().padStart(2, '0');
-      document.getElementById("timer").textContent = `${min}:${sec}`;
     }
+  };
 
-    function updateButtonState() {
-      const btn = document.getElementById("startBtn");
-      if (score.timerRunning) {
-        btn.textContent = "Stop";
-        btn.classList.remove("start-btn");
-        btn.classList.add("stop-btn");
-      } else {
-        btn.textContent = "Start";
-        btn.classList.remove("stop-btn");
-        btn.classList.add("start-btn");
-      }
-    }
-
-    // Prompt controls
-    function showPrompt() {
-      document.getElementById("promptContainer").style.display = "block";
-    }
-
-    function hidePrompt() {
-      document.getElementById("promptContainer").style.display = "none";
-    }
-
-    function updatePromptVisibility() {
-      // Automatically hide prompt if timer running or target reached
-      if (score.timerRunning || (score.homeScore >= score.target || score.awayScore >= score.target)) {
-        hidePrompt();
-      }
-    }
-
-// Show card prompt when Card button clicked
-function handleCard() {
-  document.getElementById('cardPrompt').style.display = 'block';
-}
-
-
-// Function to set team name color and hide prompt
-function setCardColor(team, color) {
-  const homeName = document.getElementById('homeTeamNameDisplay');
-  const awayName = document.getElementById('awayTeamNameDisplay');
-
-  if (team === 'home') {
-    homeName.style.color = color;
-  } else if (team === 'away') {
-    awayName.style.color = color;
+  function updateTimerDisplay() {
+    const min = Math.floor(score.timer / 60).toString().padStart(2, '0');
+    const sec = (score.timer % 60).toString().padStart(2, '0');
+    document.getElementById("timer").textContent = `${min}:${sec}`;
   }
 
-  // Hide the prompt after selection
-  document.getElementById('cardPrompt').style.display = 'none';
-}
+  function updateButtonState() {
+    const btn = document.getElementById("startBtn");
+    if (score.timerRunning) {
+      btn.textContent = "Stop";
+      btn.classList.remove("start-btn");
+      btn.classList.add("stop-btn");
+    } else {
+      btn.textContent = "Start";
+      btn.classList.remove("stop-btn");
+      btn.classList.add("start-btn");
+    }
+  }
 
-    
-window.toggleDrawer = function () {
-  document.getElementById("drawerBackdrop").classList.add("open");
-};
+  // Prompt controls
+  function showPrompt() {
+    document.getElementById("promptContainer").style.display = "block";
+  }
 
-window.closeDrawer = function () {
-  document.getElementById("drawerBackdrop").classList.remove("open");
-};
+  function hidePrompt() {
+    document.getElementById("promptContainer").style.display = "none";
+  }
 
-    window.updateNames = function () {
-      score.home = document.getElementById("homeName").value;
-      score.away = document.getElementById("awayName").value;
-      updateDisplay();
+  function updatePromptVisibility() {
+    // Automatically hide prompt if timer running or target reached
+    if (score.timerRunning || (score.homeScore >= score.target || score.awayScore >= score.target)) {
+      hidePrompt();
+    }
+  }
+
+  // Make handleCard globally accessible
+  window.handleCard = function() {
+    document.getElementById('cardPrompt').style.display = 'block';
+  };
+
+  // Make setCardColor globally accessible
+  window.setCardColor = function(team, color) {
+    const homeName = document.getElementById('homeTeamNameDisplay');
+    const awayName = document.getElementById('awayTeamNameDisplay');
+
+    if (team === 'home') {
+      homeName.style.color = color;
+    } else if (team === 'away') {
+      awayName.style.color = color;
+    }
+
+    // Hide the prompt after selection
+    document.getElementById('cardPrompt').style.display = 'none';
+  };
+
+  window.toggleDrawer = function () {
+    document.getElementById("drawerBackdrop").classList.add("open");
+  };
+
+  window.closeDrawer = function () {
+    document.getElementById("drawerBackdrop").classList.remove("open");
+  };
+
+  window.updateNames = function () {
+    score.home = document.getElementById("homeName").value;
+    score.away = document.getElementById("awayName").value;
+    updateDisplay();
+    sendUpdate();
+  };
+
+  window.updateColor = function (team, color) {
+    score.colors[team] = color;
+    sendUpdate();
+  };
+
+  window.handleLogoUpload = function(event, team) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = function () {
+      score.logos[team] = reader.result;
       sendUpdate();
     };
+    if (file) reader.readAsDataURL(file);
+  };
 
-    window.updateColor = function (team, color) {
-      score.colors[team] = color;
-      sendUpdate();
-    };
+  // Handle prompt buttons
+  window.stayInPeriod = function() {
+    hidePrompt();
+  };
 
-    window.handleLogoUpload = function(event, team) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = function () {
-        score.logos[team] = reader.result;
-        sendUpdate();
-      };
-      if (file) reader.readAsDataURL(file);
-    };
+  window.confirmNextPeriod = function() {
+    window.nextPeriod();
+    hidePrompt();
+  };
 
-    // Handle prompt buttons
-    window.stayInPeriod = function() {
-      hidePrompt();
-    };
+  // Theme toggle function
+  window.toggleDarkMode = function () {
+    const isDark = document.body.classList.toggle("dark-theme");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  };
 
-    window.confirmNextPeriod = function() {
-      window.nextPeriod();
-      hidePrompt();
-    };
+  // On load: set theme from localStorage
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-theme");
+  } else {
+    document.body.classList.remove("dark-theme");  // fixed typo here
+  }
+</script>
 
-// Theme toggle function
-window.toggleDarkMode = function () {
-  const isDark = document.body.classList.toggle("dark-theme");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-};
-
-// On load: set theme from localStorage
-const savedTheme = localStorage.getItem("theme");
-if (savedTheme === "dark") {
-  document.body.classList.add("dark-theme");
-} else {
-  dcoument.body.classList.remove("dark-theme");
-}
-    
-  </script>
 </head>
 
 <body>
