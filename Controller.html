@@ -210,38 +210,58 @@
     font-size: 2.5em;
   }
 
-  .controls {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-    width: 200px;
-  }
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
 
-  .controls button {
-    font-size: 1.5em;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    width: 100%;
-  }
+#startBtn {
+  width: 100%;
+  padding: 15px 0;
+  font-size: 1.7em;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: var(--btn-start-bg);
+  color: var(--btn-start-color);
+}
 
-  .start-btn {
-    background-color: var(--btn-start-bg);
-    color: var(--btn-start-color);
-  }
+.quadrant-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
 
-  .stop-btn {
-    background-color: var(--btn-stop-bg);
-    color: var(--btn-stop-color);
-  }
+.quadrant-buttons button {
+  padding: 12px 0;
+  font-size: 1.3em;
+  border-radius: 8px;
+  font-weight: bold;
+  width: 100%;
+  cursor: pointer;
+  border: none;
+}
 
-  .reset-btn {
-    background-color: var(--btn-reset-bg);
-    color: var(--btn-reset-color);
-  }
+.reset-btn {
+  background-color: var(--btn-reset-bg);
+  color: var(--btn-reset-color);
+}
 
+.start-btn {
+  background-color: var(--btn-start-bg);
+  color: var(--btn-start-color);
+}
+
+.card-btn {
+  background-color: #0077cc; /* You can adjust this color */
+  color: white;
+}
+  
   hr {
     width: 100%;
     border-top: 1px solid #666;
@@ -627,17 +647,16 @@ if (savedTheme === "dark") {
   <button class="minus" onclick="adjustScore('away', -1)">–</button>
 </div>
 
-    <div class="controls">
-      <button id="startBtn" class="start-btn" onclick="toggleTimer()">Start</button>
-      <button class="reset-btn" onclick="resetTimer()">Reset Timer</button>
-      <button class="reset-btn" onclick="resetScore()">Reset Score & Period</button>
-    </div>
+<div class="controls">
+  <button id="startBtn" class="start-btn" onclick="toggleTimer()">Start</button>
 
-    <hr>
-
-    <div class="controls">
-      <button class="start-btn" onclick="nextPeriod()">Next Period</button>
-    </div>
+  <div class="quadrant-buttons">
+    <button class="reset-btn" onclick="resetTimer()">Reset Timer</button>
+    <button class="reset-btn" onclick="resetScore()">Reset Score & Period</button>
+    <button class="start-btn" onclick="nextPeriod()">Next Period</button>
+    <button class="card-btn" onclick="handleCard()">Card</button>
+  </div>
+</div>
 
     <div id="promptContainer" style="display:none;">
       <p>⚠ Period <strong><span id="promptPeriod">1</span></strong> timer expired.<br />
