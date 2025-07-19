@@ -40,12 +40,13 @@
 }
 
 .theme-toggle svg {
-  stroke: white;
+  stroke: white; /* default is white for dark mode */
   width: 28px;
   height: 28px;
 }
+
 body:not(.dark-theme) .theme-toggle svg {
-  stroke: #1c1c1e;
+  stroke: #002147; /* Oxford Blue for light mode */
 }
     
 .drawer-backdrop {
